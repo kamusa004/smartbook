@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0e5aa7"/>
+      <stop offset="1" stop-color="#08375f"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#0f7a43"/>
+      <stop offset="1" stop-color="#18a45c"/>
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="40" fill="url(#bg)"/>
+  <!-- open ledger book -->
+  <g>
+    <path d="M56 48 h36 a8 8 0 0 1 8 8 v80 h-44 a10 10 0 0 1 -10 -10 v-78 a10 10 0 0 1 10 -10 z" fill="#ffffff" opacity="0.96"/>
+    <path d="M136 48 h-36 a8 8 0 0 0 -8 8 v80 h44 a10 10 0 0 0 10 -10 v-78 a10 10 0 0 0 -10 -10 z" fill="#eaf3fb"/>
+    <line x1="96" y1="57" x2="96" y2="135" stroke="#0e5aa7" stroke-width="2.5" opacity="0.25"/>
+    <rect x="57" y="60" width="27" height="5" rx="2.5" fill="#0e5aa7" opacity="0.85"/>
+    <rect x="57" y="71" width="20" height="5" rx="2.5" fill="#0e5aa7" opacity="0.55"/>
+    <rect x="57" y="82" width="24" height="5" rx="2.5" fill="#0e5aa7" opacity="0.4"/>
+    <rect x="112" y="112" width="8" height="16" rx="2.5" fill="#18a45c"/>
+    <rect x="123" y="99" width="8" height="29" rx="2.5" fill="url(#green)"/>
+    <rect x="134" y="86" width="8" height="42" rx="2.5" fill="#18a45c"/>
+  </g>
+  <!-- orange growth coin -->
+  <g>
+    <circle cx="138" cy="56" r="17" fill="#ea580c"/>
+    <circle cx="138" cy="56" r="17" fill="none" stroke="#ffffff" stroke-width="2.5" opacity="0.9"/>
+    <path d="M130 63 l15 -17 m0 0 h-9 m9 0 v9" stroke="#ffffff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
