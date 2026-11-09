@@ -90,26 +90,6 @@ h1, h2, h3, h4, h5 { font-weight: 700; letter-spacing: -.01em; }
 .sb-stat.accent-red { border-left: 4px solid var(--sb-red); }
 .bg-warn { background: var(--sb-orange-soft); color: var(--sb-orange); }
 
-/* ------------------------------------------------- demo credentials box */
-.demo-box {
-  background: var(--sb-blue-soft); border: 1px dashed rgba(13,79,139,.35);
-  border-radius: 12px; padding: .7rem .8rem .3rem;
-}
-.demo-box .demo-title {
-  font-size: .68rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
-  color: var(--sb-blue-dark); margin-bottom: .45rem;
-}
-.demo-box .demo-line {
-  display: block; width: 100%; text-align: left; background: transparent; border: 0;
-  font-size: .74rem; color: var(--sb-ink); padding: .38rem 0; cursor: pointer;
-  border-top: 1px solid rgba(13,79,139,.12);
-}
-.demo-box .demo-line:first-of-type { border-top: 0; }
-.demo-box .demo-line:hover { color: var(--sb-blue); }
-.demo-box .demo-line b { font-variant-numeric: tabular-nums; }
-.demo-box .conn-row { font-size: .74rem; color: var(--sb-ink); padding: .15rem 0 .45rem; }
-.demo-box .conn-row .txt-muted { color: var(--sb-muted); }
-
 /* ------------------------------------------------- password show/hide */
 .pw-group { position: relative; }
 .pw-group .form-control { padding-right: 4rem; }

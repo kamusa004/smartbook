@@ -35,7 +35,7 @@ const App = {
     });
 
     if (!API.state.token) {
-      if (location.hash && location.hash !== '#/login' && location.hash !== '#/register') {
+      if (location.hash && location.hash !== '#/login') {
         this.flashPending = location.hash;
       }
       location.hash = API.state.token ? '#/dashboard' : '#/login';
@@ -76,7 +76,7 @@ const App = {
     const [name, arg] = hash.split('/');
     const view = document.getElementById('view');
 
-    if (!API.state.token && !['login', 'register'].includes(name)) {
+    if (!API.state.token && !['login'].includes(name)) {
       location.hash = '#/login';
       return;
     }
@@ -86,7 +86,6 @@ const App = {
 
     const map = {
       login: () => Views.login(view),
-      register: () => Views.register(view),
       dashboard: () => Views.dashboard(view),
       pos: () => Views.pos(view),
       products: () => Pages.products(view, arg),
@@ -179,75 +178,13 @@ const Views = {
             <button class="btn btn-sb btn-lg-tap w-100" type="submit">Sign in</button>
           </form>
           <div class="text-center mt-3">
-            <a href="#/register" class="small">New shop? Create an account</a>
-          </div>
-          <div id="conn-box" class="demo-box mt-2">
-            <div class="demo-title">SmartBook server address</div>
-            <div class="conn-row" id="conn-open-row">
-              This app is not talking to your own server yet.
-              <a href="connectionHelp.html" target="_blank" rel="noopener" class="ms-1">Setup guide</a>
-            </div>
-            <div id="conn-form" class="conn-row">
-              <input class="form-control form-control-sm mb-2" id="conn-url" placeholder="http://your-server /api  e.g. http://192.168.1.10/api">
-              <div class="d-flex gap-2 align-items-center">
-                <button type="button" class="btn btn-sb btn-sm" id="conn-save">Save and test</button>
-                <span class="small" id="conn-status"></span>
-              </div>
-            </div>
-          </div>
-          <div class="text-center mt-2">
             <a href="admin.html" class="small text-muted">Platform administrator</a>
-          </div>
-          <div class="demo-box mt-3">
-            <div class="demo-title">Demo accounts (sample data)</div>
-            <button type="button" class="demo-line" data-u="grace" data-p="Demo@2024">Shop owner (Nakumatt Mini Store) - user: <b>grace</b> · pass: <b>Demo@2024</b></button>
-            <button type="button" class="demo-line" data-u="robert" data-p="Demo@2024">Shop owner (Mile 4 Hardware) - user: <b>robert</b> · pass: <b>Demo@2024</b></button>
-            <button type="button" class="demo-line" data-u="grace_cashier" data-p="Cashier@2024">Cashier (restricted role) - user: <b>grace_cashier</b> · pass: <b>Cashier@2024</b></button>
-            <button type="button" class="demo-line" data-u="sysadmin" data-p="Admin@2026" data-admin="1">Platform administrator - user: <b>sysadmin</b> · pass: <b>Admin@2026</b></button>
           </div>
         </div>
       </div>
     </div>`;
 
     attachPwToggles(el);
-    // Connection settings: probe the saved/app base and let it be replaced.
-    (async () => {
-      const status = document.getElementById('conn-status');
-      const openRow = document.getElementById('conn-open-row');
-      const inp = document.getElementById('conn-url');
-      inp.value = localStorage.getItem('sb_server_url') || API.BASE.replace(/^\.\//, location.origin + '/');
-      const probe = fetch((localStorage.getItem('sb_server_url') || API.BASE).replace(/\/$/, '') + '/health' + '?ping=' + Date.now(), { method: 'GET' })
-        .then((r) => { if (r.ok) openRow.hidden = true; return r.ok; })
-        .catch(() => false);
-      document.getElementById('conn-save').addEventListener('click', async () => {
-        const url = inp.value.trim().replace(/\/$/, '');
-        status.textContent = 'Testing…';
-        try {
-          const r = await fetch(url + '/health', { method: 'GET' });
-          const j = await r.json().catch(() => null);
-          if (r.ok && j && j.ok) {
-            localStorage.setItem('sb_server_url', url);
-            API.clearSession();
-            status.textContent = 'Connected. Reloading…';
-            setTimeout(() => location.reload(), 800);
-          } else {
-            status.textContent = 'Reachable but not a SmartBook /api endpoint.';
-          }
-        } catch (e) {
-          status.textContent = 'Could not reach that address from this device.';
-        }
-      });
-    })();
-    el.querySelectorAll('.demo-line').forEach((b) => b.addEventListener('click', () => {
-      const f = document.getElementById('login-form');
-      f.username.value = b.dataset.u;
-      f.password.value = b.dataset.p;
-      if (b.dataset.admin === '1') {
-        window.location.href = 'admin.html';
-        return;
-      }
-      f.requestSubmit();
-    }));
     document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const f = e.target;
@@ -279,88 +216,11 @@ const Views = {
     });
   },
 
-  register(el) {
-    document.getElementById('topbar').hidden = true;
-    document.getElementById('bottomnav').hidden = true;
-    el.innerHTML = `
-    <div class="auth-wrap">
-      <div class="auth-card">
-        <div class="auth-head">
-          <div class="mark">SB</div>
-          <h1>Create your shop</h1>
-          <p>Free trial - no card needed</p>
-        </div>
-        <div class="auth-body">
-          <form id="reg-form" novalidate>
-            <div class="mb-3"><label class="form-label">Your full name</label>
-              <input class="form-control" name="owner_name" required></div>
-            <div class="mb-3"><label class="form-label">Shop / business name</label>
-              <input class="form-control" name="name" required></div>
-            <div class="row g-2 mb-3">
-              <div class="col-6"><label class="form-label">Phone</label>
-                <input class="form-control" name="phone" inputmode="tel" placeholder="0772123456" required></div>
-              <div class="col-6"><label class="form-label">Email (optional)</label>
-                <input class="form-control" name="email" type="email"></div>
-            </div>
-            <div class="mb-3"><label class="form-label">Physical location</label>
-              <input class="form-control" name="location" placeholder="Mile 4, Mbarara" required></div>
-            <div class="row g-2 mb-3">
-              <div class="col-6"><label class="form-label">Business category</label>
-                <select class="form-select" name="business_category">
-                  <option>Retail shop</option><option>Grocery</option><option>Pharmacy</option>
-                  <option>Hardware</option><option>Restaurant</option><option>Salon</option><option>Other</option>
-                </select></div>
-              <div class="col-6"><label class="form-label">Language</label>
-                <select class="form-select" name="language">
-                  <option value="en">English</option><option value="lg">Luganda</option><option value="nyn">Runyankole</option>
-                </select></div>
-            </div>
-            <div class="row g-2 mb-3">
-              <div class="col-6"><label class="form-label">Username</label>
-                <input class="form-control" name="username" autocapitalize="none" required></div>
-              <div class="col-6"><label class="form-label">Password</label>
-                <input class="form-control" name="password" type="password" minlength="6" required></div>
-            </div>
-            <div class="mb-3"><label class="form-label">Subscription package</label>
-              <select class="form-select" name="plan" id="plan-select">
-                <option value="basic">Basic - UGX 10,000 / month</option>
-                <option value="standard">Standard - UGX 15,000 / month</option>
-                <option value="premium">Premium - UGX 20,000 / month</option>
-              </select>
-            </div>
-            <div id="reg-err" class="small text-danger mb-2" hidden></div>
-            <button class="btn btn-sb-green btn-lg-tap w-100" type="submit">Create shop account</button>
-          </form>
-          <div class="text-center mt-3"><a href="#/login" class="small">I already have an account</a></div>
-        </div>
-      </div>
-    </div>`;
-
-    attachPwToggles(el);
-    document.getElementById('reg-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const f = e.target;
-      const btn = f.querySelector('button[type=submit]');
-      const err = document.getElementById('reg-err');
-      const payload = {};
-      ['owner_name', 'name', 'phone', 'email', 'location', 'business_category', 'language', 'username', 'password', 'plan']
-        .forEach((k) => { payload[k] = f[k] ? f[k].value.trim() : ''; });
-      btn.disabled = true;
-      btn.textContent = 'Creating…';
-      const res = await API.post('auth/register', payload);
-      btn.disabled = false;
-      btn.textContent = 'Create shop account';
-      if (!res.ok) {
-        err.textContent = res.offline ? 'No internet connection. Registration needs a connection.' : (res.error && res.error.message) || 'Could not register.';
-        err.hidden = false;
-        return;
-      }
-      API.setSession(res.data);
-      API.rememberPerms(res.data.permissions);
-      App.afterLoginUI();
-      App.toast('Shop created. Add your products to begin.', 'ok');
-      location.hash = '#/products';
-    });
+  /* Shop self-registration was removed: only the platform administrator
+     creates shop accounts now (see admin.html). Anyone hitting #/register
+     is simply sent back to the sign-in screen. */
+  register() {
+    location.hash = '#/login';
   },
 
   /* ================================================================== */

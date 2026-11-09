@@ -72,8 +72,10 @@ try {
         exit;
     }
 
+    /* Shop self-registration is disabled: only the platform administrator
+       creates shop accounts (POST /api/admin/create-shop, admin.html). */
     if ($res === 'auth' && $act === 'register') {
-        Response::ok(Registration::createShop($in), [], 201);
+        Response::fail('Only the administrator can create shop accounts.', 403, 'FORBIDDEN');
         exit;
     }
     if ($res === 'auth' && $act === 'login') {
