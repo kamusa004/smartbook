@@ -4,9 +4,11 @@
  *   so callers can fall back to IndexedDB instead of showing a dead end.
  */
 const API = (() => {
-  // Server address priority: saved setting > page override > auto-detected.
-  const BASE = (localStorage.getItem('sb_server_url')
-    || window.SMARTBOOK_API_BASE
+  // Server address priority: page override > saved setting > auto-detected.
+  // (The connection box UI was removed: window.SMARTBOOK_API_BASE is set by
+  // index/admin.html and wins; a previously saved value is honoured second.)
+  const BASE = (window.SMARTBOOK_API_BASE
+    || localStorage.getItem('sb_server_url')
     || (location.pathname.includes('/public/') ? '/public/api' : './api')).replace(/\/$/, '');
   const TOKEN_KEY = 'sb_token';
   const CSRF_KEY = 'sb_csrf';
