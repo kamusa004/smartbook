@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d4f8b">
+<meta name="description" content="SmartBook Solutions - offline-first inventory and sales management for Ugandan retail shops.">
+<title>SmartBook Solutions - Your Business, Under Control</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="assets/img/icon-192.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/icon-192.svg">
+<link rel="stylesheet" href="assets/vendor/bootstrap.min.css">
+<link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+
+<!-- ============================ TOP BAR ============================ -->
+<header class="sb-topbar" id="topbar" hidden>
+  <div class="d-flex align-items-center justify-content-between gap-2">
+    <div class="sb-brand">
+      <span class="sb-brand-mark">SB</span>
+      <span>
+        SmartBook
+        <small id="shop-name">Your Business, Under Control.</small>
+      </span>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <span class="sb-chip" id="sync-chip" data-state="online" title="Connection and sync status">
+        <span class="dot"></span><span class="txt">Online</span>
+      </span>
+      <button class="btn btn-sm btn-light" id="btn-menu" aria-label="Menu">Menu</button>
+    </div>
+  </div>
+</header>
+
+<!-- ============================ MAIN VIEW =========================== -->
+<main id="view" class="container py-3"></main>
+
+<!-- ============================ BOTTOM NAV ========================== -->
+<nav class="sb-bottomnav" id="bottomnav" hidden>
+  <a href="#/dashboard" data-nav="dashboard"><span data-i18n="dashboard">Dashboard</span></a>
+  <a href="#/products" data-nav="products"><span data-i18n="products">Products</span></a>
+  <a href="#/pos" data-nav="pos"><span data-i18n="sell">Sell</span></a>
+  <a href="#/customers" data-nav="customers"><span data-i18n="customers">Customers</span></a>
+  <a href="#/more" data-nav="more"><span data-i18n="more">More</span></a>
+</nav>
+
+<div class="toast-stack" id="toasts"></div>
+
+<script>
+/* API base: works at the domain root, inside /frontend/, or in a subfolder.
+   A saved server address (localStorage sb_server_url) wins so the same shell
+   can also be hosted statically and pointed at any SmartBook server. */
+window.SMARTBOOK_API_BASE = window.SMARTBOOK_API_BASE
+  || (location.pathname.replace(/\/(index|admin)\.html.*$/, '').replace(/\/frontend\/.*$/, '').replace(/\/$/, '') || '') + '/api';
+</script>
+<script src="assets/vendor/bootstrap.bundle.min.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/db.js"></script>
+<script src="assets/js/sync.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/pages.js"></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "name": "SmartBook Solutions - Inventory & Sales",
+  "short_name": "SmartBook",
+  "description": "Offline-first inventory and sales management for Ugandan retail shops. Your Business, Under Control.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#0d4f8b",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["business", "productivity", "finance"],
+  "icons": [
+    { "src": "assets/img/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "assets/img/icon-512.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "assets/img/icon-512.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Record a sale", "short_name": "Sell", "url": "./index.html#/pos" },
+    { "name": "Products", "short_name": "Products", "url": "./index.html#/products" },
+    { "name": "Dashboard", "short_name": "Home", "url": "./index.html#/dashboard" }
+  ]
+}

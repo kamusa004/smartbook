@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SmartBook - Platform Administration</title>
+<link rel="icon" href="assets/img/icon-192.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/vendor/bootstrap.min.css">
+<link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body class="bg-light">
+<header class="sb-topbar">
+  <div class="d-flex align-items-center justify-content-between">
+    <div class="sb-brand"><span class="sb-brand-mark">SB</span>
+      <span>SmartBook Platform<small>Super Administrator</small></span></div>
+    <button class="btn btn-sm btn-light" id="btn-out" hidden>Sign out</button>
+  </div>
+</header>
+<main class="container py-3" id="view"></main>
+<div class="toast-stack" id="toasts"></div>
+<script>window.SMARTBOOK_API_BASE = window.SMARTBOOK_API_BASE || (location.pathname.replace(/\/(index|admin)\.html.*$/, '').replace(/\/frontend\/.*$/, '').replace(/\/$/, '') || '') + '/api';</script>
+<script src="assets/vendor/bootstrap.bundle.min.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SmartBook - Connect this app to your server</title>
+<link rel="icon" href="assets/img/icon-192.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/vendor/bootstrap.min.css">
+<link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+<main class="container py-4" style="max-width:620px">
+  <div class="sb-card">
+    <h1 class="h4 mb-3">Connect this app to your SmartBook server</h1>
+    <p class="small text-muted">This page is the app itself. It can run on a shop computer (your server) or be
+    installed from a hosted link (GitHub Pages / Firebase Hosting). If you installed it from a hosted link,
+    tell it where your real server is - once. The address is remembered on this device.</p>
+
+    <h2 class="sec-title">Option 1 - Everyone is on the same Wi-Fi</h2>
+    <ol class="small ps-3 mb-3">
+      <li>On the computer running SmartBook, press <b>Windows key + R</b>, type <b>cmd</b> and press Enter.</li>
+      <li>Type <b>ipconfig</b> and press Enter. Look for <b>IPv4 Address</b>, for example <b>192.168.1.10</b>.</li>
+      <li>In the app login screen, in the server address box, type:<br><b class="text-nowrap">http://192.168.1.10/api</b> (use your number) and tap <b>Save and test</b>.</li>
+      <li>Sign in with your username and password.</li>
+    </ol>
+
+    <h2 class="sec-title">Option 2 - Server is on the internet (recommended for many shops)</h2>
+    <p class="small">Put <b>backend/ + public/ + config/</b> on any PHP &amp; MySQL hosting, then enter
+    <b>https://your-domain.com/api</b> in the app. The app shell (this page) can stay on free static hosting -
+    only the API needs PHP hosting.</p>
+
+    <h2 class="sec-title">Option 3 - Own computer only</h2>
+    <p class="small">If you run the app on the same computer that runs the server, no setup is needed -
+    it connects to <b>/api</b> automatically (use <b>http://127.0.0.1:8080</b> in a browser).</p>
+
+    <div class="small text-muted">Tell the server address not to include a trailing slash. To change it later,
+    use the connection box on the login screen again.</div>
+  </div>
+</main>
+</body>
+</html>
