@@ -18,7 +18,27 @@
 </header>
 <main class="container py-3" id="view"></main>
 <div class="toast-stack" id="toasts"></div>
-<script>window.SMARTBOOK_API_BASE = window.SMARTBOOK_API_BASE || (location.pathname.replace(/\/(index|admin)\.html.*$/, '').replace(/\/frontend\/.*$/, '').replace(/\/$/, '') || '') + '/api';</script>
+<script>
+/* Server auto-detection (see index.html for the explanation). */
+(function () {
+  if (window.SMARTBOOK_API_BASE) return;
+  var root = location.pathname.replace(/\/(index|admin)\.html.*$/, '').replace(/\/frontend\/.*$/, '').replace(/\/$/, '') || '';
+  var candidates = [
+    (location.origin.replace(/\/$/, '')) + (root.length ? root : '') + '/api',
+    'http://127.0.0.1:8080/api'
+  ];
+  for (var i = 0; i < candidates.length; i++) {
+    try {
+      var x = new XMLHttpRequest();
+      x.open('GET', candidates[i] + '/health', false);
+      x.send(null);
+      var j = JSON.parse(x.responseText);
+      if (x.status === 200 && j && j.ok) { window.SMARTBOOK_API_BASE = candidates[i]; return; }
+    } catch (e) { /* candidate unreachable, try the next */ }
+  }
+  window.SMARTBOOK_API_BASE = (root || '') + '/api';
+})();
+</script>
 <script src="assets/vendor/bootstrap.bundle.min.js"></script>
 <script src="assets/js/api.js"></script>
 <script src="assets/js/admin.js"></script>
