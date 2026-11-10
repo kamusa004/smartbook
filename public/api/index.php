@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 require __DIR__ . '/../../backend/bootstrap.php';
 
+$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+
 /* Cross-origin support: the same app shell may be hosted on static hosting
    (GitHub Pages / Firebase Hosting) and pointed at this server. The API is
    authorised by bearer tokens in headers (no cross-site cookies), so echoing
@@ -32,7 +34,6 @@ if ($method === 'OPTIONS') {
     exit;
 }
 
-$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $path   = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $path   = preg_replace('#^/api#', '', $path);
 $seg    = array_values(array_filter(explode('/', trim($path, '/')), fn($s) => $s !== ''));

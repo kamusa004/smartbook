@@ -177,6 +177,7 @@ const Views = {
             <div id="login-err" class="small text-danger mb-2" hidden></div>
             <button class="btn btn-sb btn-lg-tap w-100" type="submit">Sign in</button>
           </form>
+          <div class="srv-status" id="srv-status"><span class="dot"></span><span class="txt">Checking server…</span></div>
           <div class="text-center mt-3">
             <a href="admin.html" class="small text-muted">Platform administrator</a>
           </div>
@@ -185,6 +186,30 @@ const Views = {
     </div>`;
 
     attachPwToggles(el);
+    // Server status probe: shows whether the local SmartBook server is up.
+    // Retries automatically so it turns green by itself after a restart.
+    const srvBox = document.getElementById('srv-status');
+    const setSrv = (state, txt) => {
+      if (!srvBox) return;
+      srvBox.className = 'srv-status ' + state;
+      srvBox.querySelector('.txt').textContent = txt;
+    };
+    let srvTimer = null;
+    function probeSrv() {
+      if (!srvBox) return;
+      fetch((API.BASE.replace(/^\.\//, location.origin + '/')) + '/health?ping=' + Date.now(), { cache: 'no-store' })
+        .then((r) => (r.ok ? r.json() : Promise.reject()))
+        .then((j) => {
+          if (j && j.ok) { setSrv('ok', 'SmartBook server ready'); return; }
+          throw new Error('bad payload');
+        })
+        .catch(() => {
+          setSrv('bad', 'SmartBook server not running — starting automatically, checking again…');
+          clearTimeout(srvTimer);
+          srvTimer = setTimeout(probeSrv, 4000);
+        });
+    }
+    probeSrv();
     document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const f = e.target;
@@ -201,9 +226,13 @@ const Views = {
       btn.disabled = false;
       btn.textContent = 'Sign in';
       if (!res.ok) {
-        err.textContent = res.offline
-          ? 'No internet connection. Sign in once while online, then the app works offline.'
-          : (res.error && res.error.message) || 'Sign in failed.';
+        if (res.offline && !navigator.onLine) {
+          err.textContent = 'No internet right now. Sign in once when connected, then the system works fully offline.';
+        } else if (res.offline || (res.error && res.error.code === 'BAD_RESPONSE')) {
+          err.textContent = 'Cannot reach the SmartBook server on this computer. It starts automatically when Windows starts — and this screen checks again every few seconds. If the red dot stays, tell the support line.';
+        } else {
+          err.textContent = (res.error && res.error.message) || 'Sign in failed.';
+        }
         err.hidden = false;
         return;
       }

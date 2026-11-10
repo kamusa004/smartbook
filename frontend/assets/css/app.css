@@ -90,6 +90,19 @@ h1, h2, h3, h4, h5 { font-weight: 700; letter-spacing: -.01em; }
 .sb-stat.accent-red { border-left: 4px solid var(--sb-red); }
 .bg-warn { background: var(--sb-orange-soft); color: var(--sb-orange); }
 
+/* ------------------------------------------------------- server status */
+.srv-status {
+  display: flex; align-items: center; justify-content: center; gap: .45rem;
+  margin-top: .9rem; font-size: .72rem; color: var(--sb-muted);
+}
+.srv-status .dot {
+  width: 8px; height: 8px; border-radius: 50%; display: inline-block;
+  background: var(--sb-muted);
+}
+.srv-status.ok .dot { background: var(--sb-green); }
+.srv-status.bad .dot { background: var(--sb-red); }
+.srv-status.bad { color: var(--sb-red); }
+
 /* ------------------------------------------------- password show/hide */
 .pw-group { position: relative; }
 .pw-group .form-control { padding-right: 4rem; }
