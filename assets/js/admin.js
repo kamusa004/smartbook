@@ -214,7 +214,7 @@ const Admin = {
     <div class="sb-card p-0"><div class="sb-table-wrap"><table class="sb-table"><thead>
       <tr><th>Shop</th><th>Package</th><th>Expires</th><th>Status</th></tr></thead><tbody>
       ${rows.length ? rows.map((s) => `<tr>
-        <td><div class="fw-semibold">${esc(s.name)} ${s.is_sample ? '<span class="badge-soft bg-gray">sample</span>' : ''}</div>
+        <td><div class="fw-semibold">${esc(s.name)}</div>
           <div class="small text-muted">${esc(s.shop_uid)} · ${esc(s.owner_name)} · ${esc(s.phone)}</div></td>
         <td class="small">${esc(s.plan_name || '—')}<div class="text-muted">${s.users} users</div></td>
         <td class="small">${fmtDate(s.subscription_expires_at)}</td>

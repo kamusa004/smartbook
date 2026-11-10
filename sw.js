@@ -5,7 +5,7 @@
  *   API writes     : never cached - queued in IndexedDB by sync.js instead
  * Bump CACHE_VERSION to invalidate old shells after a deploy.
  */
-const CACHE_VERSION = 'smartbook-v1.4.0';
+const CACHE_VERSION = 'smartbook-v1.5.0';
 const SHELL = [
   './',
   './index.html',

@@ -837,6 +837,68 @@ const Pages = {
     });
   },
 
+  /* ---------------------------------------------------- ANNOUNCEMENTS */
+  async announcements(el) {
+    const res = await API.get('announcements');
+    const list = res.ok ? (res.data || []) : [];
+    const fmt = (s) => { const d = new Date(String(s).replace(' ', 'T')); return isNaN(d) ? esc(String(s)) : d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }); };
+    el.innerHTML = `
+    <h1 class="h5 mb-2">Announcements</h1>
+    <p class="small text-muted">Messages from the system owner to every shop.</p>
+    <div class="d-grid gap-2">
+      ${list.length ? list.map((a) => `
+      <div class="sb-card">
+        <div class="fw-bold">${esc(a.title)}</div>
+        <div class="small text-muted mb-2">${esc(a.author || 'System owner')} · ${fmt(a.created_at)}</div>
+        <div style="white-space:pre-wrap">${esc(a.body)}</div>
+      </div>`).join('') : '<div class="sb-card text-muted small">No announcements yet. Messages sent by the system owner appear here.</div>'}
+    </div>`;
+  },
+
+  /* ---------------------------------------------------------- SUPPORT */
+  async support(el) {
+    const res = await API.get('support');
+    const list = res.ok ? (res.data || []) : [];
+    const fmt = (s) => { const d = new Date(String(s).replace(' ', 'T')); return isNaN(d) ? esc(String(s)) : d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }); };
+    const badge = (st) => st === 'closed' ? '<span class="badge-soft bg-success-soft">Closed</span>'
+      : st === 'in_progress' ? '<span class="badge-soft bg-warning-soft">In progress</span>'
+      : '<span class="badge-soft bg-info-soft">Open</span>';
+    el.innerHTML = `
+    <h1 class="h5 mb-2">Support</h1>
+    <p class="small text-muted">Ask the system owner for help. Replies appear under your request.</p>
+    <div class="sb-card">
+      <form id="support-form" class="d-grid gap-2">
+        <input class="form-control" name="subject" placeholder="Subject (e.g. Cannot print receipts)" maxlength="160" required>
+        <textarea class="form-control" name="message" rows="4" placeholder="Describe the problem or question" maxlength="2000" required></textarea>
+        <button class="btn btn-sb btn-lg-tap">Send request</button>
+      </form>
+    </div>
+    <h2 class="h6 mt-3 mb-2">Your requests</h2>
+    <div class="d-grid gap-2" id="support-list">
+      ${list.length ? list.map((r) => `
+      <div class="sb-card">
+        <div class="d-flex justify-content-between align-items-start gap-2">
+          <div class="fw-semibold">${esc(r.subject)}</div>${badge(r.status)}
+        </div>
+        <div class="small text-muted mb-1">${fmt(r.created_at)}</div>
+        <div class="small" style="white-space:pre-wrap">${esc(r.message)}</div>
+        ${r.response ? `<hr><div class="small"><span class="fw-semibold">Reply from system owner:</span><div style="white-space:pre-wrap">${esc(r.response)}</div></div>` : ''}
+      </div>`).join('') : '<div class="sb-card text-muted small">No requests yet.</div>'}
+    </div>`;
+    document.getElementById('support-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = e.target;
+      const btn = f.querySelector('button');
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+      const r = await API.post('support', { subject: f.subject.value.trim(), message: f.message.value.trim() });
+      btn.disabled = false;
+      btn.textContent = 'Send request';
+      if (r.ok) { App.toast('Request sent. The system owner will reply here.', 'ok'); Pages.support(el); }
+      else App.toast((r.error && r.error.message) || 'Could not send.', 'danger');
+    });
+  },
+
   /* ------------------------------------------------------------- MORE */
   async more(el) {
     const links = [
@@ -846,6 +908,8 @@ const Pages = {
       ['analytics', 'Smart analytics', 'Forecasts and recommendations'],
       ['reports', 'Reports', 'Daily, weekly, monthly, annual'],
       ['subscription', 'Subscription', 'Renew or change package'],
+      ['announcements', 'Announcements', 'Messages from the system owner'],
+      ['support', 'Support', 'Ask the system owner for help'],
       ['sync', 'Sync status', 'What is waiting to be sent'],
       ['backup', 'Backup & restore', 'Keep a copy of your records'],
       ['audit', 'Activity log', 'Who did what'],

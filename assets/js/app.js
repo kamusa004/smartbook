@@ -54,8 +54,7 @@ const App = {
     document.getElementById('bottomnav').hidden = !token;
     const shop = API.state.shop;
     if (shop) {
-      document.getElementById('shop-name').textContent = `${shop.name}${shop.is_sample ? ' (sample data)' : ''}`;
-      document.documentElement.dataset.sample = shop.is_sample ? '1' : '0';
+      document.getElementById('shop-name').textContent = shop.name;
     }
     const u = API.state.user;
     if (u) document.documentElement.dataset.role = u.role;
@@ -98,6 +97,8 @@ const App = {
       expenses: () => Pages.expenses(view),
       analytics: () => Pages.analytics(view),
       subscription: () => Pages.subscription(view),
+      announcements: () => Pages.announcements(view),
+      support: () => Pages.support(view),
       settings: () => Pages.settings(view),
       audit: () => Pages.audit(view),
       sync: () => Pages.syncStatus(view),
@@ -177,7 +178,6 @@ const Views = {
             <div id="login-err" class="small text-danger mb-2" hidden></div>
             <button class="btn btn-sb btn-lg-tap w-100" type="submit">Sign in</button>
           </form>
-          <div class="srv-status" id="srv-status"><span class="dot"></span><span class="txt">Checking server…</span></div>
           <div class="text-center mt-3">
             <a href="admin.html" class="small text-muted">Platform administrator</a>
           </div>
@@ -186,30 +186,8 @@ const Views = {
     </div>`;
 
     attachPwToggles(el);
-    // Server status probe: shows whether the local SmartBook server is up.
-    // Retries automatically so it turns green by itself after a restart.
-    const srvBox = document.getElementById('srv-status');
-    const setSrv = (state, txt) => {
-      if (!srvBox) return;
-      srvBox.className = 'srv-status ' + state;
-      srvBox.querySelector('.txt').textContent = txt;
-    };
-    let srvTimer = null;
-    function probeSrv() {
-      if (!srvBox) return;
-      fetch((API.BASE.replace(/^\.\//, location.origin + '/')) + '/health?ping=' + Date.now(), { cache: 'no-store' })
-        .then((r) => (r.ok ? r.json() : Promise.reject()))
-        .then((j) => {
-          if (j && j.ok) { setSrv('ok', 'SmartBook server ready'); return; }
-          throw new Error('bad payload');
-        })
-        .catch(() => {
-          setSrv('bad', 'SmartBook server not running — starting automatically, checking again…');
-          clearTimeout(srvTimer);
-          srvTimer = setTimeout(probeSrv, 4000);
-        });
-    }
-    probeSrv();
+    const HOSTED = /\.github\.io$/.test(location.hostname) || /\.firebaseapp\.com$/.test(location.hostname) || /\.web\.app$/.test(location.hostname);
+
     document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const f = e.target;
@@ -229,7 +207,9 @@ const Views = {
         if (res.offline && !navigator.onLine) {
           err.textContent = 'No internet right now. Sign in once when connected, then the system works fully offline.';
         } else if (res.offline || (res.error && res.error.code === 'BAD_RESPONSE')) {
-          err.textContent = 'Cannot reach the SmartBook server on this computer. It starts automatically when Windows starts — and this screen checks again every few seconds. If the red dot stays, tell the support line.';
+          err.textContent = HOSTED
+            ? 'This public preview is not connected to a live server yet. For a private trial, ask the administrator for your shop connection.'
+            : 'Cannot reach the SmartBook server on this computer. It starts automatically when Windows starts — try again in a few seconds.';
         } else {
           err.textContent = (res.error && res.error.message) || 'Sign in failed.';
         }
@@ -271,7 +251,6 @@ const Views = {
     el.innerHTML = `
     ${sub.status && sub.status !== 'active' ? `<div class="sync-banner ${sub.writes_allowed ? 'offline' : 'error'}">
         <span>${esc(sub.message)}</span><a class="ms-auto btn btn-sm btn-light" href="#/subscription">Renew</a></div>` : ''}
-    ${API.state.shop && API.state.shop.is_sample ? `<div class="sync-banner online"><span>Sample demonstration data - not real business records.</span></div>` : ''}
     <div class="d-flex align-items-center justify-content-between mb-2">
       <div>
         <div class="text-muted small">${new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}</div>
