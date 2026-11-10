@@ -195,21 +195,31 @@ const Views = {
       srvBox.querySelector('.txt').textContent = txt;
     };
     let srvTimer = null;
+    const HOSTED = /\.github\.io$/.test(location.hostname) || /\.firebaseapp\.com$/.test(location.hostname) || /\.web\.app$/.test(location.hostname);
+    function srvText(running) {
+      return running
+        ? 'SmartBook server ready'
+        : (HOSTED
+          ? 'Not connected to a live server yet — for a private trial, ask the administrator for your connection. Retrying…'
+          : 'SmartBook server not running — starting automatically, checking again…');
+    }
     function probeSrv() {
       if (!srvBox) return;
       fetch((API.BASE.replace(/^\.\//, location.origin + '/')) + '/health?ping=' + Date.now(), { cache: 'no-store' })
         .then((r) => (r.ok ? r.json() : Promise.reject()))
         .then((j) => {
-          if (j && j.ok) { setSrv('ok', 'SmartBook server ready'); return; }
+          if (j && j.ok) { setSrv('ok', srvText(true)); return; }
           throw new Error('bad payload');
         })
         .catch(() => {
-          setSrv('bad', 'SmartBook server not running — starting automatically, checking again…');
+          setSrv('bad', srvText(false));
           clearTimeout(srvTimer);
           srvTimer = setTimeout(probeSrv, 4000);
         });
     }
     probeSrv();
+    // On a hosted preview (public trial link) the copy itself explains trials.
+
     document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const f = e.target;
@@ -229,7 +239,9 @@ const Views = {
         if (res.offline && !navigator.onLine) {
           err.textContent = 'No internet right now. Sign in once when connected, then the system works fully offline.';
         } else if (res.offline || (res.error && res.error.code === 'BAD_RESPONSE')) {
-          err.textContent = 'Cannot reach the SmartBook server on this computer. It starts automatically when Windows starts — and this screen checks again every few seconds. If the red dot stays, tell the support line.';
+          err.textContent = HOSTED
+            ? 'This public preview is not connected to a live server yet. For a private trial, ask the administrator for your shop connection.'
+            : 'Cannot reach the SmartBook server on this computer. It starts automatically when Windows starts — and this screen checks again every few seconds.';
         } else {
           err.textContent = (res.error && res.error.message) || 'Sign in failed.';
         }
