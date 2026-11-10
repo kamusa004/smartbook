@@ -360,6 +360,12 @@ try {
                 [$shopId, Input::need($in, 'subject', 160), Input::need($in, 'message', 2000)]);
             Response::ok(['id' => Db::id()], [], 201);
 
+        case 'announcements':
+            // Broadcasts written by the system owner in the admin panel.
+            Response::ok(Db::all('SELECT a.*, s.full_name AS author FROM announcements a
+                                    LEFT JOIN system_administrators s ON s.id = a.created_by
+                                   ORDER BY a.created_at DESC LIMIT 50'));
+
         default:
             throw new AppException('Unknown endpoint: ' . $res . '/' . $act, 404, 'NO_ROUTE');
     }
