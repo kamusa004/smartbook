@@ -16,5 +16,10 @@ netstat -ano | findstr ":8080" | findstr "LISTENING" >nul 2>&1
 if errorlevel 1 (
   start "SmartBook Server" /min /D "%APP%" "%RT%\php\php.exe" -S 127.0.0.1:8080 router.php
 )
+
+REM --- Secure tunnel: lets people log in from anywhere online. ---
+REM The shareable web address changes after each restart; the fresh
+REM address is written to "%RT%\tunnel.log".
+start "SmartBook Tunnel" /min "%RT%\cloudflared.exe" tunnel --url http://127.0.0.1:8080 --logfile "%RT%\tunnel.log"
 endlocal
 exit /b 0
