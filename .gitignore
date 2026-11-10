@@ -1,4 +1,0 @@
-config/config.local.php
-storage/uploads/*
-!storage/uploads/.gitkeep
-*.log
