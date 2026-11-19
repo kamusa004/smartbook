@@ -69,14 +69,14 @@ const API = (() => {
         body: body === undefined ? undefined : JSON.stringify(body)
       });
     } catch (err) {
-      return { ok: false, offline: true, error: { code: 'OFFLINE', message: 'No internet connection.' } };
+      return { ok: false, offline: true, error: { code: 'OFFLINE', message: 'No connection to the SmartBook server. Check your internet, then open the latest SmartBook link again.' } };
     }
 
     let json;
     try {
       json = await res.json();
     } catch (err) {
-      return { ok: false, error: { code: 'BAD_RESPONSE', message: 'The app could not reach the server properly. Check the connection and try again.' } };
+      return { ok: false, error: { code: 'BAD_RESPONSE', message: 'The SmartBook server did not answer. Open the newest SmartBook link from the computer running the system, then try again.' } };
     }
     if (res.status === 401) {
       clearSession();
