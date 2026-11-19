@@ -208,7 +208,7 @@ const Views = {
           err.textContent = 'No internet right now. Sign in once when connected, then the system works fully offline.';
         } else if (res.offline || (res.error && res.error.code === 'BAD_RESPONSE')) {
           err.textContent = HOSTED
-            ? 'This public preview is not connected to a live server yet. For a private trial, ask the administrator for your shop connection.'
+            ? 'The live SmartBook server is not responding right now. Open the newest SmartBook link from the computer running the system, then try again.'
             : 'Cannot reach the SmartBook server on this computer. It starts automatically when Windows starts — try again in a few seconds.';
         } else {
           err.textContent = (res.error && res.error.message) || 'Sign in failed.';
