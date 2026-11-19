@@ -5,7 +5,8 @@
 #   3. publishes the result to the permanent GitHub Pages address
 # Any failure is logged and swallowed so the server itself keeps running.
 
-$ErrorActionPreference = 'Stop'
+# Git writes harmless CRLF warnings to stderr; keep it non-terminating.
+$ErrorActionPreference = 'Continue'
 $RT  = 'C:\Users\iTEK\Documents\Default Project\.runtime'
 $APP = 'C:\Users\iTEK\Desktop\smartbook'
 $logFile = Join-Path $RT 'smartbook-link-update.log'
@@ -61,7 +62,7 @@ try {
 window.SMARTBOOK_TUNNEL_BASE = '$url';
 window.SMARTBOOK_LAN_BASE = '$lanBase';
 "@
-    Set-Content -Path $jsFile -Value $js -Encoding ASCII
+    Set-Content -Path $jsFile -Value ($js -replace "`r`n", "`n" -replace "`n", "`r`n") -Encoding ASCII
 
     $links = @"
 SMARTBOOK SOLUTIONS - CURRENT LINKS
@@ -91,8 +92,8 @@ tunnel start automatically when Windows signs in.
         git fetch public gh-pages --quiet 2>$null
 
         # Main branch: GitHub Actions rebuilds the Pages site from frontend/.
-        git add frontend/assets/js/server-url.js 2>$null
-        git diff --cached --quiet 2>$null
+        git add frontend/assets/js/server-url.js 2>&1 | Out-Null
+        git diff --cached --quiet 2>&1 | Out-Null
         if ($LASTEXITCODE -ne 0) {
             git -c user.name='SmartBook Updater' -c user.email='updater@smartbook.ug' `
                 commit -m "Live link: $url" --quiet 2>$null
@@ -110,8 +111,8 @@ tunnel start automatically when Windows signs in.
         if ($LASTEXITCODE -eq 0) {
             Copy-Item (Join-Path $APP 'frontend\*') $wt -Recurse -Force
             Push-Location $wt
-            git add -A 2>$null
-            git diff --cached --quiet 2>$null
+            git add -A 2>&1 | Out-Null
+            git diff --cached --quiet 2>&1 | Out-Null
             if ($LASTEXITCODE -ne 0) {
                 git -c user.name='SmartBook Updater' -c user.email='updater@smartbook.ug' `
                     commit -m "Live link: $url" --quiet 2>$null

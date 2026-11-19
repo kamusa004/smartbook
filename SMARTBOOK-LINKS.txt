@@ -1,0 +1,16 @@
+﻿SMARTBOOK SOLUTIONS - CURRENT LINKS
+==================================
+
+1) PERMANENT LINK (use this one on phones and other gadgets)
+   https://kamusa004.github.io/smartbook/
+   This page now follows the live server automatically. Add it to the
+   home screen once; it will keep working after every restart.
+
+2) DIRECT LIVE LINK (changes whenever the computer restarts)
+   https://acts-waters-identification-genius.trycloudflare.com
+
+3) SAME WI-FI LINK (laptops/phones connected to this Wi-Fi)
+   http://172.20.11.117:8080
+
+Keep this computer ON and connected to the internet. The server, database and
+tunnel start automatically when Windows signs in.
