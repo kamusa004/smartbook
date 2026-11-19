@@ -5,10 +5,17 @@
  */
 const API = (() => {
   // Server address priority: page override > saved setting > auto-detected.
-  // (The connection box UI was removed: window.SMARTBOOK_API_BASE is set by
-  // index/admin.html and wins; a previously saved value is honoured second.)
+  // A saved address that points at 127.0.0.1 is only valid on the computer
+  // running the server. On a phone it means "this phone", which produces the
+  // confusing "app could not reach the server" error, so discard it there.
+  let savedBase = localStorage.getItem('sb_server_url') || '';
+  const localHost = location.hostname === '127.0.0.1' || location.hostname === 'localhost';
+  if (savedBase && !localHost && /^(https?:\/\/)?(127\.0\.0\.1|localhost)(:\d+)?/i.test(savedBase)) {
+    localStorage.removeItem('sb_server_url');
+    savedBase = '';
+  }
   const BASE = (window.SMARTBOOK_API_BASE
-    || localStorage.getItem('sb_server_url')
+    || savedBase
     || (location.pathname.includes('/public/') ? '/public/api' : './api')).replace(/\/$/, '');
   const TOKEN_KEY = 'sb_token';
   const CSRF_KEY = 'sb_csrf';

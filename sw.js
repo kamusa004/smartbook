@@ -5,7 +5,7 @@
  *   API writes     : never cached - queued in IndexedDB by sync.js instead
  * Bump CACHE_VERSION to invalidate old shells after a deploy.
  */
-const CACHE_VERSION = 'smartbook-v1.5.0';
+const CACHE_VERSION = 'smartbook-v1.5.2';
 const SHELL = [
   './',
   './index.html',
@@ -63,27 +63,43 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // App shell (HTML): offline-first. Serve the cached shell immediately,
-  // then refresh it from the network when the server is reachable.
+  // The current server address changes whenever the tunnel restarts. It must
+  // never be served from last week's cache or a phone keeps calling a dead
+  // address and reports "app could not reach the server".
+  if (url.pathname.endsWith('/server-url.js')) {
+    event.respondWith(
+      fetch(req)
+        .then((res) => {
+          if (res.ok) {
+            const copy = res.clone();
+            caches.open(CACHE_VERSION).then((c) => c.put(req, copy));
+          }
+          return res;
+        })
+        .catch(() => caches.match(req))
+    );
+    return;
+  }
+
+  // App shell (HTML): network-first so a phone picks up the new link file and
+  // code changes immediately; the cached shell is used only when offline.
   if (req.mode === 'navigate' || url.pathname.endsWith('.html')) {
     event.respondWith(
-      caches.match(req)
-        .then((hit) => hit || caches.match('./index.html'))
-        .then((hit) => hit || caches.match('./'))
-        .then((hit) => {
-          if (hit) return hit;
-          return fetch(req).then((res) => {
-            if (res.ok && url.origin === self.location.origin) {
-              const copy = res.clone();
-              caches.open(CACHE_VERSION).then((c) => c.put(req, copy));
-            }
-            return res;
-          });
+      fetch(req)
+        .then((res) => {
+          if (res.ok && url.origin === self.location.origin) {
+            const copy = res.clone();
+            caches.open(CACHE_VERSION).then((c) => c.put(req, copy));
+          }
+          return res;
         })
-        .catch(() => new Response(
-          '<!DOCTYPE html><meta charset="utf-8"><body style="font-family:system-ui;padding:2rem">You are offline. Open the app once while online to cache it.</body>',
-          { headers: { 'Content-Type': 'text/html; charset=utf-8' } }
-        ))
+        .catch(() => caches.match(req)
+          .then((hit) => hit || caches.match('./index.html'))
+          .then((hit) => hit || caches.match('./'))
+          .then((hit) => hit || new Response(
+            '<!DOCTYPE html><meta charset="utf-8"><body style="font-family:system-ui;padding:2rem">You are offline. Open the app once while online to cache it.</body>',
+            { headers: { 'Content-Type': 'text/html; charset=utf-8' } }
+          )))
     );
     return;
   }
