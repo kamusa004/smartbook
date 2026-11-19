@@ -47,19 +47,26 @@
 
 <div class="toast-stack" id="toasts"></div>
 
+<script src="assets/js/server-url.js"></script>
 <script>
-/* Server auto-detection. The app shell can be reached from several ways:
-   the installed app (http://127.0.0.1:8080), a static editor preview such as
-   VS Code "Go Live" (port 5500, no PHP), or a hosted copy. The first
-   candidate that answers /api/health wins. Synchronous probe runs before
-   api.js loads so the first request already uses the right server. */
+/* Server auto-detection. The same app shell is opened in four ways:
+   1. the live share link (Cloudflare tunnel),
+   2. the permanent hosted page (GitHub Pages - has no PHP of its own),
+   3. another phone/laptop on the same Wi-Fi (LAN address),
+   4. the installed app on this computer (http://127.0.0.1:8080).
+   server-url.js is refreshed at startup with the current tunnel + LAN
+   addresses. The first candidate that answers /api/health wins. The probe is
+   synchronous so the very first login already uses the working server. */
 (function () {
   if (window.SMARTBOOK_API_BASE) return;
   var root = location.pathname.replace(/\/(index|admin)\.html.*$/, '').replace(/\/frontend\/.*$/, '').replace(/\/$/, '') || '';
-  var candidates = [
-    (location.origin.replace(/\/$/, '')) + (root.length ? root : '') + '/api',
-    'http://127.0.0.1:8080/api'
-  ];
+  var tunnel = (window.SMARTBOOK_TUNNEL_BASE || '').replace(/\/$/, '');
+  var lan = (window.SMARTBOOK_LAN_BASE || '').replace(/\/$/, '');
+  var candidates = [];
+  if (tunnel) candidates.push(tunnel + '/api');
+  candidates.push(location.origin.replace(/\/$/, '') + (root.length ? root : '') + '/api');
+  if (lan) candidates.push(lan + '/api');
+  candidates.push('http://127.0.0.1:8080/api');
   for (var i = 0; i < candidates.length; i++) {
     try {
       var x = new XMLHttpRequest();
@@ -69,7 +76,7 @@
       if (x.status === 200 && j && j.ok) { window.SMARTBOOK_API_BASE = candidates[i]; return; }
     } catch (e) { /* candidate unreachable, try the next */ }
   }
-  window.SMARTBOOK_API_BASE = (root || '') + '/api';
+  window.SMARTBOOK_API_BASE = tunnel ? tunnel + '/api' : (root || '') + '/api';
 })();
 </script>
 <script src="assets/vendor/bootstrap.bundle.min.js"></script>

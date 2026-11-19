@@ -18,15 +18,19 @@
 </header>
 <main class="container py-3" id="view"></main>
 <div class="toast-stack" id="toasts"></div>
+<script src="assets/js/server-url.js"></script>
 <script>
 /* Server auto-detection (see index.html for the explanation). */
 (function () {
   if (window.SMARTBOOK_API_BASE) return;
   var root = location.pathname.replace(/\/(index|admin)\.html.*$/, '').replace(/\/frontend\/.*$/, '').replace(/\/$/, '') || '';
-  var candidates = [
-    (location.origin.replace(/\/$/, '')) + (root.length ? root : '') + '/api',
-    'http://127.0.0.1:8080/api'
-  ];
+  var tunnel = (window.SMARTBOOK_TUNNEL_BASE || '').replace(/\/$/, '');
+  var lan = (window.SMARTBOOK_LAN_BASE || '').replace(/\/$/, '');
+  var candidates = [];
+  if (tunnel) candidates.push(tunnel + '/api');
+  candidates.push(location.origin.replace(/\/$/, '') + (root.length ? root : '') + '/api');
+  if (lan) candidates.push(lan + '/api');
+  candidates.push('http://127.0.0.1:8080/api');
   for (var i = 0; i < candidates.length; i++) {
     try {
       var x = new XMLHttpRequest();
@@ -36,7 +40,7 @@
       if (x.status === 200 && j && j.ok) { window.SMARTBOOK_API_BASE = candidates[i]; return; }
     } catch (e) { /* candidate unreachable, try the next */ }
   }
-  window.SMARTBOOK_API_BASE = (root || '') + '/api';
+  window.SMARTBOOK_API_BASE = tunnel ? tunnel + '/api' : (root || '') + '/api';
 })();
 </script>
 <script src="assets/vendor/bootstrap.bundle.min.js"></script>
